@@ -33,22 +33,32 @@ exports.createCategory = async(req,res) =>{
     }
 }
 
+// Required categories that must always exist to match frontend dropdown
+const REQUIRED_CATEGORIES = [
+    { name: "WebDev", description: "Web Development courses" },
+    { name: "Python", description: "Python Programming courses" },
+    { name: "DevOps", description: "DevOps and Infrastructure courses" },
+    { name: "AI|ML", description: "Artificial Intelligence and Machine Learning courses" },
+    { name: "Operating System", description: "Operating Systems and core CS concepts" }
+];
+
+async function ensureCategories() {
+    // Upsert each required category by name – inserts only if that exact name is missing
+    for (const cat of REQUIRED_CATEGORIES) {
+        await Category.updateOne(
+            { name: cat.name },
+            { $setOnInsert: { name: cat.name, description: cat.description } },
+            { upsert: true }
+        );
+    }
+}
+
 exports.getAllCategory = async(req,res)=>{
     try{
-       let response  = await Category.find({},{name:true , description:true});
-       
-       // Self-seeding: If the new production database has no categories, seed default ones automatically
-       if (!response || response.length === 0) {
-           const defaultCategories = [
-               { name: "WebDev", description: "Web Development courses" },
-               { name: "Python", description: "Python Programming courses" },
-               { name: "DevOps", description: "DevOps and Infrastructure courses" },
-               { name: "AI|ML", description: "Artificial Intelligence and Machine Learning courses" },
-               { name: "Operating System", description: "Operating Systems and core CS concepts" }
-           ];
-           await Category.insertMany(defaultCategories);
-           response = await Category.find({},{name:true , description:true});
-       }
+       // Always guarantee correct categories exist before returning
+       await ensureCategories();
+
+       const response = await Category.find({},{name:true , description:true});
 
        res.status(200).json({
         success:true,
