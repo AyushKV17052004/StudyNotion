@@ -53,7 +53,27 @@ function TopBar(){
     }
 
     return(
-        <div className="w-full fixed z-40 border-b border-gray-600 bg-[rgb(3,1,29)] flex flex-row items-center justify-around py-2 ">
+        <div className="w-full fixed z-40 flex flex-col">
+          {/* Marvel accent bar – Iron Man red/gold shimmer */}
+          <div
+            className="w-full h-[3px] relative overflow-hidden"
+            style={{ background: "linear-gradient(90deg, #dc2626, #f59e0b, #dc2626, #ef4444, #f59e0b)" }}
+          >
+            <div
+              className="absolute inset-0"
+              style={{
+                background: "linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.4) 50%, transparent 100%)",
+                animation: "shimmer-bar 2.5s ease-in-out infinite",
+              }}
+            />
+            <style>{`
+              @keyframes shimmer-bar {
+                0% { transform: translateX(-100%); }
+                100% { transform: translateX(200%); }
+              }
+            `}</style>
+          </div>
+        <div className="border-b border-gray-600/50 bg-[rgb(3,1,29)]/95 backdrop-blur-md flex flex-row items-center justify-around py-2 ">
             <div className="w-[150px]">
               <img onClick={logoHandler} className="object-contain w-[150px] " src={Logo} alt="StudyNotion-Logo" />  
             </div>
@@ -130,6 +150,7 @@ function TopBar(){
             </div>
               <img onClick={() => dispatch(showMenu())}  className="w-[30px] object-contain self-end invert " src={menu} alt="" />
             </div>
+        </div>
         </div>
     )
 }

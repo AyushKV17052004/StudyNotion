@@ -10,6 +10,8 @@ import { useDispatch } from "react-redux"
 import { useNavigate } from "react-router-dom"
 import { useState } from "react"
 import { NavLink } from "react-router-dom"
+import { removeAccount } from "../../../Redux/slices/AccountType"
+import { removeToken } from "../../../Redux/slices/auth"
 function Dashboard(){
           const dispatch = useDispatch()
    const navigate = useNavigate()
@@ -17,6 +19,7 @@ function Dashboard(){
 
 function logoutHandler(){
     dispatch(removeToken())
+    dispatch(removeAccount())
     navigate("/Login")
 }
     return (
@@ -56,10 +59,12 @@ function logoutHandler(){
                             <h1>Edit Profile</h1>
                         </div>
                     </NavLink>
-                    <div className="flex justify-evenly items-center ">
-                        <img className="sm:w-[13px] w-[10px] invert object-cover" src={setting} alt="" />
-                    <button>Settings</button>
-                    </div>
+                    <NavLink to="/Instructor/Home/Dashboard/Settings" className={({ isActive }) => `w-full ml-3 ${isActive ? "text-yellow-600" : ""}`}>
+                        <div className="w-full py-2 px-2 flex justify-start items-center gap-x-2">
+                            <img className="sm:w-[13px] w-[10px] invert object-cover" src={setting} alt="" />
+                            <h1>Settings</h1>
+                        </div>
+                    </NavLink>
                      <div onClick={logoutHandler} className="flex cursor-pointer justify-evenly items-center  py-2">
                             <img className="sm:w-[15px] w-[10px] object-contain invert" src={logout} alt="" />
                         <button  className=" cursor-pointer hover:brightness-90">Log out</button></div>

@@ -164,8 +164,14 @@ const adminMailHTML = `
 );
 
           if(sendMessage){
-            sendResponse  = await maileSender(email, `Your message has been sent successfully to Study Notion`, userMailHTML
+            const sendResponse  = await maileSender(email, `Your message has been sent successfully to Study Notion`, userMailHTML
 );
+            if(!sendResponse){
+              return res.status(400).json({
+                success:false,
+                message:"Unable to send confirmation email, please try later"
+              })
+            }
 
           }
           else{

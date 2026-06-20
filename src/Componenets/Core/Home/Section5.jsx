@@ -1,8 +1,10 @@
+import { useNavigate } from "react-router-dom"
 import girl from "../../../assets/Girl.png"
 import Card1 from "../../../assets/Card1.png"
 import Card2 from "../../../assets/Card2.png"
 import Card3 from "../../../assets/Card3.png"
-import { useNavigate } from "react-router-dom"
+import AnimatedSection from "../../Common/AnimatedSection"
+import { motion } from "framer-motion"
 
 
 
@@ -11,7 +13,7 @@ function Section5(){
     return(
         <div className="bg-gradient-to-bl from-[#ffe4e6] to-[#ccfbf1] w-full  pb-10">
             
-            <div className="w-10/12 py-10 mx-auto flex lg:flex-row flex-col justify-center lg:justify-evenly items-center   ">
+            <AnimatedSection className="w-10/12 py-10 mx-auto flex lg:flex-row flex-col justify-center lg:justify-evenly items-center">
                 <h1 className="text-4xl font-bold text-black">Get the Skills you need for a <span className="text-blue-500">Job that is in demand</span></h1>
                 <div className=" flex flex-col lg:items-start items-center justify-center gap-y-5 lg:ml-50 ">
                     <p className="text-md text-gray-400 text-wrap">The modern Study Notion App the dictates its own terms. Today, to be a competitive specialist requires more than professional skills.</p>
@@ -19,7 +21,7 @@ function Section5(){
                         navigate("/Signup")
                     }} className="px-5 text-black bg-yellow-400 py-2 rounded-md hover:scale-90 transition duration-500 cursor-pointer">Learn More </button>
                 </div>
-            </div>
+            </AnimatedSection>
             <div className="w-11/12 mx-auto flex lg:flex-row flex-col gap-y-10 lg:justify-evenly justify-center items-center">
                 <div className="w-[500px]  max-[400px]:hidden">
                     <ul className="list-none flex flex-col gap-y-10 justify-center items-center ">

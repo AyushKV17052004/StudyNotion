@@ -99,7 +99,7 @@ exports.createCourse = async(req, res) =>{
 
 exports.getAllCourses = async(req, res)=>{
   try{
-   const allCourses = await Course.find({} , {
+   const allCourses = await Course.find({ status: "Published" } , {
     courseName:true,
     courseDescription:true,
     instructor:true,
@@ -107,8 +107,11 @@ exports.getAllCourses = async(req, res)=>{
     whatYouWillLearn:true,
     ratingAndreview:true,
     thumbnailUrl:true,
-    studentsEnrolled:true
-   }).populate("instructor").exec();
+    studentsEnrolled:true,
+    status:true,
+    Tags:true,
+    Category:true
+   }).populate("instructor").populate("Category").exec();
    
    if(!allCourses){
     return(
@@ -259,44 +262,49 @@ exports.getInstructorCourses = async(req, res)=>{
 
 exports.updateCourse = async(req,res) =>{
   try{
-      const {courseName , courseDescription , whatYouWillLearn ,  price , category , Tags }  = req.body;
-      const thumbnail  = await req.files.thumbnail;
-      const courseId = req.body;
-     if(!courseDescription || !courseName || !category || !whatYouWillLearn || !price || !thumbnail || !Tags ){
+      const {courseId, courseName , courseDescription , whatYouWillLearn ,  price , category , Tags , instructions }  = req.body;
+      const thumbnail  = req.files?.thumbnail;
+
+     if(!courseId || !courseDescription || !courseName || !category || !whatYouWillLearn || !price ){
         return res.status(404).json({
                 success:false,
                 message:"Fill out all the mandatory details"
             })
-        
       }
-    const categoryDetails  = await Category.findById(category)
+
+    const courseDetails = await Course.findById(courseId);
+    if(!courseDetails){
+      return res.status(404).json({
+        success:false,
+        message:"Course to be updated can't be found"
+      })
+    }
+
+    const categoryDetails  = await Category.findOne({name: category}) || await Category.findById(category)
       if(!categoryDetails){
         return res.status(404).json({
-                success:true,
+                success:false,
                 message:"category can't be Found"
             })
-        
       }
-       const uploadedImage  = await uploadImage(thumbnail , process.env.FOLDER_NAME  )
 
-      const courseDetails = await Course.findByIdAndUpdate({_id:courseId},
-        {
+      const updateData = {
           courseName,
           courseDescription,
           whatYouWillLearn,
           price,
-          category,
+          Category: categoryDetails._id,
           Tags,
-          thumbnailUrl:uploadedImage.secure_url
-        },
-        {new:true}
-      )
-      if(!courseDetails){
-        return res.status(404).json({
-          success:false,
-          message:"Course to be updated can't be found"
-        })
+          instructions
       }
+
+      if(thumbnail){
+        const uploadedImage  = await uploadImage(thumbnail , process.env.FOLDER_NAME)
+        updateData.thumbnailUrl = uploadedImage.secure_url
+      }
+
+      await Course.findByIdAndUpdate(courseId, updateData, {new:true})
+
       return res.status(200).json({
         success:true,
         message:"Course updated Successfully"
@@ -507,7 +515,10 @@ exports.getEnrolledCourses = async(req,res)=>{
  
     const userId = req.User.id;
 
-    const Student = await User.findById(userId).populate("Courses").exec();
+    const Student = await User.findById(userId)
+      .populate("Courses")
+      .populate("CourseProgression")
+      .exec();
 
     if(!Student){
       return res.status(400).json({
@@ -540,14 +551,34 @@ exports.completeCourse  = async(req,res) =>{
   const userId = req.User.id;
   const {courseId} = req.body;
 
-  const ProgressUpdation = await CourseProgress.findOneAndUpdate({courseID:courseId},
-    {
-      percentage:100
-    }
+  if(!courseId){
+    return res.status(400).json({
+      success:false,
+      message:"Course ID is required"
+    })
+  }
+
+  const student = await User.findById(userId);
+  const progressDoc = await CourseProgress.findOne({
+    courseID: courseId,
+    _id: { $in: student.CourseProgression }
+  });
+
+  if(!progressDoc){
+    return res.status(404).json({
+      success:false,
+      message:"Course progress not found"
+    })
+  }
+
+  const ProgressUpdation = await CourseProgress.findByIdAndUpdate(
+    progressDoc._id,
+    { percentage: 100 },
+    { new: true }
   )
 
   if(!ProgressUpdation){
-    return res.status(400).status({
+    return res.status(400).json({
       success:false,
       message:"Something went wrong!"
     })
@@ -555,13 +586,95 @@ exports.completeCourse  = async(req,res) =>{
 
   res.status(200).json({
     success:true,
+    message:"Course marked as completed",
     ProgressUpdation
   })
-
-
 
   }
   catch(error){
     console.log(error);
+    res.status(500).json({
+      success:false,
+      message:error.message
+    })
+  }
+}
+
+exports.markVideoComplete = async(req, res) => {
+  try {
+    const userId = req.User.id;
+    const { courseId, subsectionId } = req.body;
+
+    if(!courseId || !subsectionId) {
+      return res.status(400).json({
+        success: false,
+        message: "courseId and subsectionId are required"
+      });
+    }
+
+    const student = await User.findById(userId);
+    const course = await Course.findById(courseId).populate({
+      path: "courseContent",
+      populate: { path: "subSection" }
+    });
+
+    if(!course) {
+      return res.status(404).json({ success: false, message: "Course not found" });
+    }
+
+    const isEnrolled = student.Courses.some(
+      (id) => id.toString() === courseId.toString()
+    );
+
+    if(!isEnrolled) {
+      return res.status(403).json({ success: false, message: "Not enrolled in this course" });
+    }
+
+    let progress = await CourseProgress.findOne({
+      courseID: courseId,
+      _id: { $in: student.CourseProgression }
+    });
+
+    if(!progress) {
+      progress = await CourseProgress.create({
+        courseID: courseId,
+        completedVideo: [],
+        percentage: 0
+      });
+      await User.findByIdAndUpdate(userId, {
+        $push: { CourseProgression: progress._id }
+      });
+    }
+
+    let totalVideos = 0;
+    course.courseContent.forEach((section) => {
+      totalVideos += section.subSection?.length || 0;
+    });
+
+    const alreadyCompleted = progress.completedVideo.some(
+      (id) => id.toString() === subsectionId.toString()
+    );
+
+    if(!alreadyCompleted) {
+      progress.completedVideo.push(subsectionId);
+    }
+
+    progress.percentage = totalVideos > 0
+      ? Math.min(100, Math.round((progress.completedVideo.length / totalVideos) * 100))
+      : 0;
+
+    await progress.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Progress updated",
+      progress
+    });
+  } catch(error) {
+    console.log(error);
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
   }
 }

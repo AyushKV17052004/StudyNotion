@@ -5,7 +5,9 @@ const {
   createRating,
   getAvgRating,
   getCourseRatings,
-  getAllRatings
+  getAllRatings,
+  deleteRating,
+  getMyReviewForCourse
 } = require("../controllers/RatingAndReview");
 
 const { auth, isStudent, isAdmin } = require("../middleware/auth");
@@ -37,6 +39,22 @@ router.post(
 router.get(
   "/all",
   getAllRatings
+);
+
+// Delete rating (Only author STUDENT)
+router.delete(
+  "/delete/:reviewId",
+  auth,
+  isStudent,
+  deleteRating
+);
+
+// Get my own review for a course (logged-in student)
+router.post(
+  "/my-review",
+  auth,
+  isStudent,
+  getMyReviewForCourse
 );
 
 module.exports = router;

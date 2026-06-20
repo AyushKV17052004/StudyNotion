@@ -12,8 +12,8 @@ const OTPSchema = new mongoose.Schema(
       },
       createdAT:{
         type:Date,
-        default:Date.now(),
-        expires:300000
+        default:Date.now,   // no () – evaluated fresh per document
+        expires:300         // 300 seconds = 5 minutes (NOT 300000)
       }
 
     }
@@ -161,12 +161,16 @@ async function sendVerificationEmail(email , Otp){
         console.log("Mail sent Successfully" , mailResponse);
     }
     catch(error){
-        console.log("Error while Sending Verification Mail" , error );
+        console.log("Error while Sending Verification Mail:", error.message );
+        console.log(`\n======================================================`);
+        console.log(`[DEV FALLBACK] Generated OTP for ${email}: ${Otp}`);
+        console.log(`======================================================\n`);
     }
 }
-OTPSchema.pre("save" , async function(next){
-    await sendVerificationEmail(this.email , this.Otp);
- 
+OTPSchema.pre("save" , async function(){
+    if (this.isNew) {
+        await sendVerificationEmail(this.email , this.Otp);
+    }
 })
 
 

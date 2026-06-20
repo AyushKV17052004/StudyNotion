@@ -3,8 +3,10 @@ import NavBar from "../../Core/Home/NavBar"
 import Dashboard from "./SectionDashboard"
 import SubsectionVideo from "./SubsectionVideo"
 import { useState } from "react"
+import { useParams } from "react-router-dom"
 function card(){
 
+    const {courseId} = useParams();
     const [activeSubsection , setActive] = useState("");
      const [ReviewPopup , setReviewPopup] = useState(false)
     return(
@@ -19,7 +21,7 @@ function card(){
                 <Dashboard ReviewPopup={ReviewPopup} setReviewPopup={setReviewPopup} setActive={setActive}></Dashboard>
                 </div>
                 <div className={`flex-1 justify-center items-center  `}>
-                  <SubsectionVideo ReviewPopup={ReviewPopup} setReviewPopup={setReviewPopup} activeSubsection={activeSubsection}></SubsectionVideo>
+                  <SubsectionVideo ReviewPopup={ReviewPopup} setReviewPopup={setReviewPopup} activeSubsection={activeSubsection} courseId={courseId}></SubsectionVideo>
                 </div>
                   </div>
                     </div>

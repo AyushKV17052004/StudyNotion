@@ -163,19 +163,25 @@ exports.resetController = async (req , res )=>{
         }
 
         const token  = crypto.randomUUID();
-
         const URL = `http://localhost:5173/reset-Password/${token}`
-        
-        await maileSender(email , "STUDYNOTION: Link for resetting Password" , LINKStyling.replaceAll("{{RESET_LINK}}" , URL))
 
+        // ✅ Save token to DB FIRST so it persists even if email fails
         user.token = token;
         user.tokenExpiry = Date.now()+(5*60*1000);
         await user.save();
 
+        // Attempt to send email; fall back to console log if SMTP fails
+        try {
+            await maileSender(email , "STUDYNOTION: Link for resetting Password" , LINKStyling.replaceAll("{{RESET_LINK}}" , URL))
+            console.log("[RESET] Password reset email sent to:", email);
+        } catch (mailError) {
+            console.warn("[RESET][DEV FALLBACK] SMTP failed – use this link to reset password:", URL);
+            console.error("[RESET] Mail error:", mailError.message);
+        }
+
         res.status(200).json({
             success:true,
             message:"Link Successfully Sent to email",
-            user
         })
     }
     catch(error){

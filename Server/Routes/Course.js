@@ -15,7 +15,9 @@ const {
   publishCourse,
   PurchaseCourse,
   getEnrolledCourses,
-  completeCourse
+  completeCourse,
+  markVideoComplete,
+  updateCourse
 } = require("../controllers/Course");
 
 // Section Controllers
@@ -94,10 +96,24 @@ router.get(
 )
 
 router.put(
-  "course/complete",
+  "/course/complete",
   auth,
   isStudent,
   completeCourse
+)
+
+router.put(
+  "/course/progress",
+  auth,
+  isStudent,
+  markVideoComplete
+)
+
+router.put(
+  "/course/update",
+  auth,
+  isInstructor,
+  updateCourse
 )
 
 // ================= SECTION =================

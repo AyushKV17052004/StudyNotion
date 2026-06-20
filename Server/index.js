@@ -32,9 +32,32 @@ App.use(cookieParser())
 App.use(
     cors(
         {
-            origin:"http://localhost:5173",
-            credentials:true
+            origin: function(origin, callback) {
+                const allowed = [
+                    "http://localhost:5173",
+                    "http://127.0.0.1:5173",
+                    "http://localhost:5174",
+                    "http://localhost:5175",
+                    "http://localhost:3000",
+                    "http://127.0.0.1:3000",
+                    process.env.CLIENT_URL,
+                ].filter(Boolean);
+                
+                // Allow requests with no origin (e.g. Postman, mobile apps, server-to-server)
+                if (!origin) {
+                    return callback(null, true);
+                }
 
+                // Normalize trailing slashes to avoid CORS matching issues
+                const cleanOrigin = origin.replace(/\/$/, "");
+                const allowedClean = allowed.map(url => url.replace(/\/$/, ""));
+
+                if (allowedClean.includes(cleanOrigin)) {
+                    return callback(null, true);
+                }
+                return callback(new Error(`CORS: Origin ${origin} not allowed`));
+            },
+            credentials:true
         }
     )
 )
@@ -58,6 +81,7 @@ App.get("/" , (req,res)=>{
     })
 })
 
-App.listen(4000 , ()=>{
-    console.log("App is Running")
+const PORT = process.env.PORT || 4000;
+App.listen(PORT , ()=>{
+    console.log(`App is Running on port ${PORT}`)
 })

@@ -56,10 +56,10 @@ exports.updateSubSection = async(req,res)=>{
     try{
         const { newTitle, newDescription , newTimeDuration , subsectionId} = req.body;
         const newVideoFile = req.files?.videoFile
-        if(!subsectionId && !newTitle && !newDescription  && !newTimeDuration){
+        if(!subsectionId){
             return res.status(400).json({
                 success:false,
-                message:"Details Missing to be updated"
+                message:"Subsection ID is required to update details"
             }) 
         }
           let Video = null;

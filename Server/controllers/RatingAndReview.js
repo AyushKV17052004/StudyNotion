@@ -23,7 +23,9 @@ exports.createRating = async(req , res)=>{
                 message:"Course not found"
             })
          }
-            if(!(courseDetail.studentsEnrolled.includes(userId))){
+            if(!(courseDetail.studentsEnrolled.some(
+              (id) => id.toString() === userId.toString()
+            ))){
             return res.status(400).json({
                 success:false,
                 message:"User is not enrolled in course"
@@ -126,14 +128,7 @@ exports.getCourseRatings = async(req,res) =>{
     try{
         const {courseId} = req.body;
 
-        const courseDetails =await Course.findById({_id:courseId})
-        if(!courseDetails){
-            return res.status(404).json({
-                success:false,
-                message:"Course not found"
-            })
-        }
-        const allRatings  = await courseDetails.populate(
+        const allRatings = await Course.findById(courseId).populate(
             {
                 path:"ratingAndreview",
                 populate:{
@@ -199,3 +194,72 @@ exports.getAllRatings = async(req,res) =>{
        
     }
 }
+
+exports.deleteRating = async (req, res) => {
+  try {
+    const { reviewId } = req.params;
+    const userId = req.User.id;
+
+    const reviewDetail = await ratingAndreview.findById(reviewId);
+    if (!reviewDetail) {
+      return res.status(404).json({
+        success: false,
+        message: "Review not found"
+      });
+    }
+
+    // Access check: Only the user who posted the review can delete it
+    if (reviewDetail.user.toString() !== userId.toString()) {
+      return res.status(403).json({
+        success: false,
+        message: "You can only delete your own reviews"
+      });
+    }
+
+    // Remove review from Course's array
+    await Course.findByIdAndUpdate(
+      reviewDetail.Course,
+      {
+        $pull: {
+          ratingAndreview: reviewId
+        }
+      }
+    );
+
+    // Delete the review document itself
+    await ratingAndreview.findByIdAndDelete(reviewId);
+
+    return res.status(200).json({
+      success: true,
+      message: "Review deleted successfully"
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
+};
+exports.getMyReviewForCourse = async (req, res) => {
+  try {
+    const { courseId } = req.body;
+    const userId = req.User.id;
+
+    const review = await ratingAndreview.findOne({
+      user: userId,
+      Course: courseId,
+    });
+
+    return res.status(200).json({
+      success: true,
+      review: review || null,
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};

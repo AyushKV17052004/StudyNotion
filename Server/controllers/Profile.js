@@ -4,41 +4,48 @@ const {uploadImage} = require("../utils/imageUploader")
 
 
 exports.ProfileUpdate = async(req,res)=>{
-    try{   const UserId = req.User.id
-          const {About  ,DOB ,  contactNumber , Profession , Gender}= req.body;
+    try{  const UserId = req.User.id
+          const {About, DOB, contactNumber, Profession, Gender, firstName, lastName}= req.body;
           
-          if(!About && !DOB  && !contactNumber && !Profession && !Gender){
-            return res.status(404).json({
+          if(!About && !DOB && !contactNumber && !Profession && !Gender && !firstName && !lastName){
+            return res.status(400).json({
                 success:false,
-                message:"Select atleast one parameter to be updated"
+                message:"Select at least one parameter to be updated"
             })
           }
        
-          const userDetail = await User.findById({_id:UserId});
+          const userDetail = await User.findById(UserId);
           if(!userDetail){
             return res.status(404).json({
                 success:false,
                 message:"User Not Found"
             })
           }
+          
+          if(firstName) userDetail.firstName = firstName;
+          if(lastName) userDetail.lastName = lastName;
+          if(firstName || lastName) {
+            await userDetail.save();
+          }
+          
           const ProfileId = userDetail.additionalDetails
-   
+    
          
-         const updatedProfile = await Profile.findByIdAndUpdate(ProfileId , 
+         const updatedProfile = await Profile.findByIdAndUpdate(ProfileId, 
             {
-                About , DOB , contactNumber , Profession , Gender 
+                About, DOB, contactNumber, Profession, Gender 
             }
             ,
             {new:true}
          )
         
-         
-
+         const updatedUser = await User.findById(UserId).populate("additionalDetails").exec();
 
       return res.status(200).json({
             success:true,
             message:"Profile Updated Successfully",
-            updatedProfile
+            updatedProfile,
+            user: updatedUser
         })
       
 

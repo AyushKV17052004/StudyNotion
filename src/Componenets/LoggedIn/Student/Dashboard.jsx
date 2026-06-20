@@ -100,10 +100,17 @@ function logoutHandler(){
                 </div>
 
                 <div className="px-2 flex flex-col gap-y-3 text-gray-500 text-[10px] sm:text-sm font-bold mt-5">
-                    <div className="flex justify-evenly items-center gap-x-2">
-                        <img className="sm:w-[13px] w-[10px] invert object-cover" src={setting} alt="" />
-                    <button>Settings</button>
-                    </div>
+      <NavLink
+        to="/Student/Home/Dashboard/Settings"
+        className={({ isActive }) =>
+          `w-full block ${isActive ? activeClass : ""}`
+        }
+      >
+        <div className={baseClass}>
+          <img className="w-[15px] invert object-cover" src={setting} alt="settings" />
+          <h1>Settings</h1>
+        </div>
+      </NavLink>
                      <div  className="flex cursor-pointer justify-evenly gap-x-2 items-center  py-2">
                             <img className="sm:w-[15px] w-[10px] object-contain invert" src={logout} alt="" />
                         <button onClick={logoutHandler} className=" cursor-pointer hover:brightness-90">Log out</button></div>

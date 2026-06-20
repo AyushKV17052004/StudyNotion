@@ -245,12 +245,86 @@ export const getEnrolled = () => {
   )
 }
 
-export const completedCourse = () =>{
+export const completedCourse = (Data) =>{
   return apiConnector(
     "PUT",
-    "/course/complete"
+    "/course/complete",
+    Data
   )
-} 
+}
+
+export const markVideoComplete = (Data) => {
+  return apiConnector(
+    "PUT",
+    "/course/progress",
+    Data
+  )
+}
+
+export const getAvgRating = (Data) => {
+  return apiConnector(
+    "POST",
+    "/rate/average",
+    Data
+  )
+}
+
+export const getCourseRatings = (Data) => {
+  return apiConnector(
+    "POST",
+    "/rate/course",
+    Data
+  )
+}
+
+export const getAllRatings = () => {
+  return apiConnector(
+    "GET",
+    "/rate/all"
+  )
+}
+
+export const changePasswordLoggedIn = (Data) => {
+  return apiConnector(
+    "PUT",
+    "/auth/change-password",
+    Data
+  )
+}
+
+export const deleteAccount = () => {
+  return apiConnector(
+    "DELETE",
+    "/auth/profile/delete"
+  )
+}
+
+export const getCategoryDetails = (Data) => {
+  return apiConnector(
+    "POST",
+    "/category/details",
+    Data
+  )
+}
+
+export const updateCourse = (DATA) => {
+  const formData = new FormData();
+  if (DATA.thumbnailUrl) {
+    formData.append("thumbnail", DATA.thumbnailUrl);
+  }
+  formData.append("courseId", DATA.courseId);
+  formData.append("courseName", DATA.courseName);
+  formData.append("courseDescription", DATA.courseDescription);
+  formData.append("Tags", DATA.Tags);
+  formData.append("category", DATA.category);
+  formData.append("whatYouWillLearn", DATA.whatYouWillLearn);
+  formData.append("price", DATA.price);
+  formData.append("instructions", DATA.instructions || "");
+
+  return apiConnector("PUT", "/course/update", formData, {
+    "Content-Type": "multipart/form-data",
+  });
+};
 
 export const getSubsection = (Data) =>{
   return apiConnector(
@@ -266,4 +340,19 @@ export const rateCourse = (Data) =>{
     "/rate/create",
     Data
   )
+}
+
+export const deleteRating = (reviewId) => {
+  return apiConnector(
+    "DELETE",
+    `/rate/delete/${reviewId}`
+  );
+}
+
+export const getMyReviewForCourse = (courseId) => {
+  return apiConnector(
+    "POST",
+    "/rate/my-review",
+    { courseId }
+  );
 }

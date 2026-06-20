@@ -1,0 +1,7 @@
+# Ignore backend folder on Vercel deployment
+Server/
+node_modules/
+dist/
+.env
+.env.local
+.git/

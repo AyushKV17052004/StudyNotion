@@ -1,5 +1,8 @@
 
 import Home from "./Pages/Home"
+import FloatingStickers from "./Componenets/Common/FloatingStickers"
+import BackToTop from "./Componenets/Common/BackToTop"
+import SpiderLoader from "./Componenets/Common/SpiderLoader"
 import './App.css'
 import { Route , Routes } from 'react-router-dom'
 import Contact from "./Pages/Contact"
@@ -35,6 +38,9 @@ import Student_SingleCourse from "./Componenets/LoggedIn/Student/Student_SingleC
 import Student_Cart from "./Componenets/LoggedIn/Student/Student_Cart"
 import Student_Enrolled from "./Componenets/LoggedIn/Student/Student_Enrolled"
 import StudentCourseVideos from "./Componenets/LoggedIn/Student/StudentCourseVideos"
+import Student_PurchaseHistoryPage from "./Componenets/LoggedIn/Student/Student_PurchaseHistoryPage"
+import Student_SettingsPage from "./Componenets/LoggedIn/Student/Student_SettingsPage"
+import Instructor_SettingsPage from "./Componenets/LoggedIn/Instructor/Instructor_SettingsPage"
 function ScrollToTop() {
   const { pathname } = useLocation();
 
@@ -51,7 +57,10 @@ function ScrollToTop() {
 function App() {
 
  return(
-  <div className="">
+  <div className="" style={{ position: "relative" }}>
+  <SpiderLoader />
+  <FloatingStickers />
+  <BackToTop />
   <ScrollToTop />
 
    <Routes>
@@ -94,6 +103,12 @@ function App() {
 <Route element={<ProtectedRoute />}>
   <Route path={`/Student/Course/details/:courseId`} element={<StudentCourseVideos></StudentCourseVideos>} />
 </Route>
+<Route element={<ProtectedRoute />}>
+  <Route path={`/Student/Home/Dashboard/PurchaseHistory`} element={<Student_PurchaseHistoryPage />} />
+</Route>
+<Route element={<ProtectedRoute />}>
+  <Route path={`/Student/Home/Dashboard/Settings`} element={<Student_SettingsPage />} />
+</Route>
 
     {/* Routes for Instructors */}
 
@@ -106,11 +121,14 @@ function App() {
    <Route element={<ProtectedRoute1 />}>
   <Route path={`/Instructor/Contact`} element={<Instructor_Contact></Instructor_Contact>} />
 </Route>
- <Route element={<ProtectedRoute />}>
+ <Route element={<ProtectedRoute1 />}>
     <Route path={`/Instructor/Home/Dashboard/EditProfile`} element={<InstructorProfileEdit></InstructorProfileEdit>} />
     </Route>
  <Route element={<ProtectedRoute1 />}>
     <Route path={`/Instructor/Home/Dashboard/MyCourses`} element={<Instructor_Course></Instructor_Course>} />
+    </Route>
+ <Route element={<ProtectedRoute1 />}>
+    <Route path={`/Instructor/Home/Dashboard/Settings`} element={<Instructor_SettingsPage />} />
     </Route>
 
     <Route path="/Catalogue/NotFound" element={<NotFound></NotFound>} ></Route>

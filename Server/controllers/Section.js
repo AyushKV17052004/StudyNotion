@@ -102,6 +102,12 @@ exports.deleteSection = async(req,res) =>{
           }
           //I think course pull required here
           const section = await Section.findById(sectionId)
+          if (!section) {
+            return res.status(404).json({
+                success:false,
+                message:"Section not Found!"
+            })
+          }
           await SubSection.deleteMany({
       _id: { $in: section.subSection },
     });

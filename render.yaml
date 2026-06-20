@@ -1,0 +1,35 @@
+services:
+  - type: web
+    name: studynotion-backend
+    env: node
+    plan: free
+    rootDir: Server
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: PORT
+        value: 4000
+      - key: DB_URL
+        placeholder: "Your MongoDB connection URL (e.g. mongodb+srv://...)"
+      - key: JWT_SECRET
+        generateValue: true # Generates a secure random JWT secret automatically
+      - key: CLIENT_URL
+        placeholder: "Your Vercel deployment URL (e.g. https://your-app.vercel.app)"
+      - key: FOLDER_NAME
+        value: "STUDYNOTION-Backend"
+      - key: MAIL_HOST
+        value: "smtp.gmail.com"
+      - key: MAIL_USER
+        placeholder: "Your Gmail account email"
+      - key: MAIL_PASS
+        placeholder: "Your Gmail App Password (16 characters, no spaces)"
+      - key: RAZORPAY_KEY
+        placeholder: "Your Razorpay Key ID"
+      - key: RAZORPAY_SECRET
+        placeholder: "Your Razorpay Secret Key"
+      - key: API_KEY
+        placeholder: "Your Cloudinary API Key"
+      - key: API_SECRET
+        placeholder: "Your Cloudinary API Secret"
+      - key: CLOUD_NAME
+        placeholder: "Your Cloudinary Cloud Name"

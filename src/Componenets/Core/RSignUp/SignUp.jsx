@@ -4,6 +4,7 @@ import { useState } from "react"
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { sendOtp } from "../../../services/ApiInstance";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 function SignUp(){
 
@@ -11,6 +12,8 @@ const [accountType , setAccount] = useState("Student");
 const [loading, setLoading] = useState(false);
 const navigate = useNavigate();
 const [Data , setData] = useState({firstName:"" , lastName:"" , email:"" , Password:"" , confirmPassword:"" , accountType:"Student"})
+const [showPassword, setShowPassword] = useState(false);
+const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
 function accountHandler(type) {
   setAccount(type);
@@ -52,7 +55,7 @@ function accountHandler(type) {
     console.log(result.data);
     if(result.data.success  == true){
    
-      toast.success(result.message)
+      toast.success(result.data.message || "OTP Sent Successfully")
      navigate("/send-otp" , 
         {state: {
             signupData: Data,
@@ -122,16 +125,50 @@ function accountHandler(type) {
                 
                 <div className="w-full  flex lg:flex-row flex-col justify-between gap-x-3 items-center">
                     <div className="lg:w-1/2 w-full" >
-                   <label className="text-white" htmlFor="Password">Password <span className="text-red-500">*</span></label>
-                   <br />
-                   <input  onChange={changeHandler} className="w-full border-b border-gray-400 px-2 py-2 rounded-md text-gray-400 text-md bg-gray-800 " type="password" required name="Password" value={Data.Password}  placeholder="Create Password"   id="Password"></input>
-                   </div>
+                    <label className="text-white" htmlFor="Password">Password <span className="text-red-500">*</span></label>
                     <br />
-                   <div className="lg:w-1/2 w-full">
+                    <div className="relative">
+                      <input  
+                        onChange={changeHandler} 
+                        className="w-full border-b border-gray-400 pl-2 pr-10 py-2 rounded-md text-gray-400 text-md bg-gray-800 focus:outline-none" 
+                        type={showPassword ? "text" : "password"} 
+                        required 
+                        name="Password" 
+                        value={Data.Password}  
+                        placeholder="Create Password"   
+                        id="Password"
+                      />
+                      <span 
+                        onClick={() => setShowPassword((prev) => !prev)} 
+                        className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer text-gray-400 hover:text-white transition-colors duration-200"
+                      >
+                        {showPassword ? <FaEyeSlash size={18} /> : <FaEye size={18} />}
+                      </span>
+                    </div>
+                    </div>
+                     <br />
+                    <div className="lg:w-1/2 w-full">
                     <label className="text-white" htmlFor="confirmPassword">Confirm Password <span className="text-red-500">*</span></label>
-                   <br />
-                   <input  onChange={changeHandler} className="w-full border-b border-gray-400 px-2 py-2 rounded-md text-gray-400 text-md bg-gray-800 " type="password" required name="confirmPassword" value={Data.confirmPassword}  placeholder="Confirm Password"   id="confirmPassword"></input>
-                   </div>
+                    <br />
+                    <div className="relative">
+                      <input  
+                        onChange={changeHandler} 
+                        className="w-full border-b border-gray-400 pl-2 pr-10 py-2 rounded-md text-gray-400 text-md bg-gray-800 focus:outline-none" 
+                        type={showConfirmPassword ? "text" : "password"} 
+                        required 
+                        name="confirmPassword" 
+                        value={Data.confirmPassword}  
+                        placeholder="Confirm Password"   
+                        id="confirmPassword"
+                      />
+                      <span 
+                        onClick={() => setShowConfirmPassword((prev) => !prev)} 
+                        className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer text-gray-400 hover:text-white transition-colors duration-200"
+                      >
+                        {showConfirmPassword ? <FaEyeSlash size={18} /> : <FaEye size={18} />}
+                      </span>
+                    </div>
+                    </div>
 
                  </div>
                  <br />

@@ -72,11 +72,17 @@ exports.categoryPageDetails = async(req,res) =>{
         const SameCategory = await Category.findById({_id:categoryId}).populate(
             {
                 path:"course",
-                select:"coursename thumbnailUrl courseDescription price ",
-                populate:{
-                    path:"ratingAndreview",
-                }
-            
+                match: { status: "Published" },
+                select:"courseName thumbnailUrl courseDescription price status instructor whatYouWillLearn Category",
+                populate:[
+                    {
+                        path:"instructor",
+                        select:"firstName lastName imgURL"
+                    },
+                    {
+                        path:"ratingAndreview",
+                    }
+                ]
             }
         ).exec()
 
@@ -89,11 +95,17 @@ exports.categoryPageDetails = async(req,res) =>{
         const diffCategory = await Category.find({_id:{$ne: categoryId}}).populate(
             {
                 path:"course",
-                select:"coursename thumbnailUrl courseDescription price ",
-                populate:{
-                    path:"ratingAndreview",
-                }
-            
+                match: { status: "Published" },
+                select:"courseName thumbnailUrl courseDescription price status instructor whatYouWillLearn Category",
+                populate:[
+                    {
+                        path:"instructor",
+                        select:"firstName lastName imgURL"
+                    },
+                    {
+                        path:"ratingAndreview",
+                    }
+                ]
             }
         ).exec()
     

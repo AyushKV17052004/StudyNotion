@@ -26,7 +26,6 @@ exports.auth = async (req , res, next) =>{
           }
           try{
             const decode =  jwt.verify(token , process.env.JWT_SECRET);
-            console.log(decode);
             req.User = decode;
             
           }
@@ -58,7 +57,7 @@ exports.isStudent = async (req , res , next) =>{
         return res.status(401).json(
             {
                 success:false,
-                message:"This is Only For Student"
+                message:"This is Only For Students"
             }
         )
        }
@@ -66,7 +65,10 @@ exports.isStudent = async (req , res , next) =>{
     }
     catch(error){
           console.log(error);
-
+          return res.status(500).json({
+              success:false,
+              message:"User role verification failed"
+          });
     }
 }
 exports.isAdmin = async (req , res , next) =>{
@@ -83,7 +85,10 @@ exports.isAdmin = async (req , res , next) =>{
     }
     catch(error){
           console.log(error);
-
+          return res.status(500).json({
+              success:false,
+              message:"User role verification failed"
+          });
     }
 }
 
@@ -93,7 +98,7 @@ exports.isInstructor = async (req , res , next) =>{
         return res.status(401).json(
             {
                 success:false,
-                message:"This is Only For Admin"
+                message:"This is Only For Instructors"
             }
         )
        }
@@ -101,6 +106,9 @@ exports.isInstructor = async (req , res , next) =>{
     }
     catch(error){
           console.log(error);
-
+          return res.status(500).json({
+              success:false,
+              message:"User role verification failed"
+          });
     }
 }

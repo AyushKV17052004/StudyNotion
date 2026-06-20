@@ -7,6 +7,8 @@ import { setToken } from "../../../Redux/slices/auth";
 import { useNavigate } from "react-router-dom";
 import { login } from "../../../services/ApiInstance";
 import { setAccount, setID } from "../../../Redux/slices/AccountType";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
+
 function Section1(){
 
     const token = useSelector((state)=> (state.auth.token))
@@ -15,6 +17,7 @@ function Section1(){
     const accountType = useSelector((state) => (state.account.accountType))
     const [Data , setData] = useState({email:"" , Password:""});
     const [loading , setLoading] = useState(false)
+    const [showPassword, setShowPassword] = useState(false);
       function changeHandler(event){
     const{name , value , type, checked } = event.target;
     setData(prev=>{
@@ -96,14 +99,31 @@ navigate(
           <div className="w-full flex flex-col">
             <div>
             <label className="text-white" htmlFor="Password">Password <span className="text-red-600">*</span></label> 
-          <br />
-          <input onChange={changeHandler}  className="w-full  border-b border-gray-400 px-2 py-2 rounded-md text-gray-400 text-md bg-gray-800 " type={`password`} required name="Password" placeholder="Enter Password" value={Data.Password}  id="Password"></input>
-          <br />
-          </div>
-          <h1 onClick={() =>{
-            navigate("/reset-password")
-          }} className="cursor-pointer hover:brightness-105 text-xs self-end text-blue-500">Forgot Password</h1>    
-         </div>
+            <br />
+            <div className="relative">
+              <input 
+                onChange={changeHandler}  
+                className="w-full border-b border-gray-400 pl-2 pr-10 py-2 rounded-md text-gray-400 text-md bg-gray-800 focus:outline-none" 
+                type={showPassword ? "text" : "password"} 
+                required 
+                name="Password" 
+                placeholder="Enter Password" 
+                value={Data.Password}  
+                id="Password"
+              />
+              <span 
+                onClick={() => setShowPassword((prev) => !prev)} 
+                className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer text-gray-400 hover:text-white transition-colors duration-200"
+              >
+                {showPassword ? <FaEyeSlash size={18} /> : <FaEye size={18} />}
+              </span>
+            </div>
+            <br />
+            </div>
+            <h1 onClick={() =>{
+              navigate("/reset-password")
+            }} className="cursor-pointer hover:brightness-105 text-xs self-end text-blue-500">Forgot Password</h1>    
+           </div>
          <br />
          
          <button type="submit"  className={` w-full px-3 py-2 text-lg font-bold text-black bg-yellow-300 rounded-md cursor-pointer hover:scale-90 transition duration-500 ${loading===true?"cursor-not-allowed":""} `}>Sign in</button> 

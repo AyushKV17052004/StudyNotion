@@ -1,6 +1,6 @@
 import { useSelector } from "react-redux";
 import add from "../../../assets/add.png"
-import { deleteCourse, getInstructorCourses } from "../../../services/ApiInstance";
+import { deleteCourse, getInstructorCourses, GetCourse } from "../../../services/ApiInstance";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import InstructorCard from "./CourseCreatedCard"
@@ -10,6 +10,7 @@ function Card({step ,setStep , setCourseId , setActive}) {
 
   const userID  = useSelector((state) => (state.account.userID))
   const [allCourses , setAllCourses] = useState([])
+  const [durationMap, setDurationMap] = useState({})
 
 async function CourseDelete(courseId) {
 
@@ -41,9 +42,35 @@ async function CourseDelete(courseId) {
       
       const result  = await getInstructorCourses();
       if(result.data.success){
-        setAllCourses(result.data.Courses);
-        if(allCourses.length>0)
-        toast.success("Courses Fetched Successfully")
+        const courses = result.data.Courses;
+        setAllCourses(courses);
+        if(courses.length>0) {
+          toast.success("Courses Fetched Successfully")
+          
+          courses.forEach(async (course) => {
+            try {
+              const courseResult = await GetCourse({ courseId: course._id });
+              if (courseResult.data.success) {
+                const courseData = courseResult.data.Courses;
+                let totalMinutes = 0;
+                courseData.courseContent?.forEach((section) => {
+                  section.subSection?.forEach((sub) => {
+                    const match = sub.timeDuration?.match(/(\d+)/);
+                    if (match) totalMinutes += parseInt(match[1], 10);
+                  });
+                });
+                const hours = Math.floor(totalMinutes / 60);
+                const mins = totalMinutes % 60;
+                setDurationMap((prev) => ({
+                  ...prev,
+                  [course._id]: hours > 0 ? `${hours}h ${mins}m` : `${mins}m`
+                }));
+              }
+            } catch (err) {
+              console.log(err);
+            }
+          });
+        }
       }
     }
     catch(error){
@@ -93,7 +120,7 @@ async function CourseDelete(courseId) {
           <td>
             <InstructorCard course={course} />
           </td>
-          <td className="text-white text-xs lg:text-sm">15h 10m</td>
+          <td className="text-white text-xs lg:text-sm">{durationMap[course._id] || "0m"}</td>
           <td className="text-white text-xs lg:text-sm">{course.price}</td>
           <td>
             <div className="flex gap-x-1 lg:gap-x-3">

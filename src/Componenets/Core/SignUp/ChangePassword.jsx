@@ -5,11 +5,14 @@ import { useState } from "react"
 import { toast } from "react-toastify"
 import { useSelector } from "react-redux"
 import { ChangePassword } from "../../../services/ApiInstance"
+import { FaEye, FaEyeSlash } from "react-icons/fa"
 
 function changePass (){
     const [loading , setLoading] = useState(false);
     const [Data , setData] = useState({newPassword:"" , confirmPassword:""})
     const {token} = useParams()
+    const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
      function changeHandler(event){
     const{name , value , type, checked } = event.target;
     setData(prev=>{
@@ -71,16 +74,50 @@ function changePass (){
             <p className="text-gray-600 text-md text-center">Almost done. Enter your new password and youre all set.</p>
 
            <div className="w-full" >
-                   <label className="text-white" htmlFor="newPassword">Password <span className="text-red-500">*</span></label>
-                   <br />
-                   <input  onChange={changeHandler} className="w-full border-b border-gray-400 px-2 py-2 rounded-md text-gray-400 text-md bg-gray-800 " type="password" required name="newPassword" value={Data.newPassword}  placeholder="Enter New Password"   id="newPassword"></input>
-                   </div>
+                    <label className="text-white" htmlFor="newPassword">Password <span className="text-red-500">*</span></label>
                     <br />
-                   <div className=" w-full">
+                    <div className="relative">
+                      <input  
+                        onChange={changeHandler} 
+                        className="w-full border-b border-gray-400 pl-2 pr-10 py-2 rounded-md text-gray-400 text-md bg-gray-800 focus:outline-none" 
+                        type={showPassword ? "text" : "password"} 
+                        required 
+                        name="newPassword" 
+                        value={Data.newPassword}  
+                        placeholder="Enter New Password"   
+                        id="newPassword"
+                      />
+                      <span 
+                        onClick={() => setShowPassword((prev) => !prev)} 
+                        className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer text-gray-400 hover:text-white transition-colors duration-200"
+                      >
+                        {showPassword ? <FaEyeSlash size={18} /> : <FaEye size={18} />}
+                      </span>
+                    </div>
+                    </div>
+                     <br />
+                    <div className=" w-full">
                     <label className="text-white" htmlFor="confirmPassword">Confirm Password <span className="text-red-500">*</span></label>
-                   <br />
-                   <input  onChange={changeHandler} className="w-full border-b border-gray-400 px-2 py-2 rounded-md text-gray-400 text-md bg-gray-800 " type="password" required name="confirmPassword" value={Data.confirmPassword}  placeholder="Confirm Password"   id="confirmPassword"></input>
-                   </div>
+                    <br />
+                    <div className="relative">
+                      <input  
+                        onChange={changeHandler} 
+                        className="w-full border-b border-gray-400 pl-2 pr-10 py-2 rounded-md text-gray-400 text-md bg-gray-800 focus:outline-none" 
+                        type={showConfirmPassword ? "text" : "password"} 
+                        required 
+                        name="confirmPassword" 
+                        value={Data.confirmPassword}  
+                        placeholder="Confirm Password"   
+                        id="confirmPassword"
+                      />
+                      <span 
+                        onClick={() => setShowConfirmPassword((prev) => !prev)} 
+                        className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer text-gray-400 hover:text-white transition-colors duration-200"
+                      >
+                        {showConfirmPassword ? <FaEyeSlash size={18} /> : <FaEye size={18} />}
+                      </span>
+                    </div>
+                    </div>
                    <br />
                     <button onClick={PasswordChanger} className= {`w-full rounded-md text-center bg-yellow-400 text-md text-black cursor-pointer hover:scale-105 py-1 ${loading===true?"cursor-not-allowed":""} `}>{`${loading ===true?'Changing Passsword...':'Reset Password'} `}</button>
                     <h1  onClick={() => {
