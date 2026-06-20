@@ -35,13 +35,20 @@ exports.createCategory = async(req,res) =>{
 
 exports.getAllCategory = async(req,res)=>{
     try{
-       const response  = await Category.find({},{name:true , description:true});
-       if(!response){
-         return res.status(401).json({
-            success:false,
-            message:"NO Category Found!"
-        })
+       let response  = await Category.find({},{name:true , description:true});
+       
+       // Self-seeding: If the new production database has no categories, seed default ones automatically
+       if (!response || response.length === 0) {
+           const defaultCategories = [
+               { name: "Web Development", description: "Learn HTML, CSS, JavaScript, React, Node.js, and build modern websites." },
+               { name: "AI & Machine Learning", description: "Explore neural networks, Python, deep learning, and advanced AI systems." },
+               { name: "Mobile Development", description: "Build premium iOS and Android applications using React Native, Flutter, or Swift/Kotlin." },
+               { name: "Cyber Security", description: "Master ethical hacking, network security, and protect systems from cyber threats." }
+           ];
+           await Category.insertMany(defaultCategories);
+           response = await Category.find({},{name:true , description:true});
        }
+
        res.status(200).json({
         success:true,
         message:"All category are Fetched Successfully",
