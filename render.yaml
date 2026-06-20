@@ -10,26 +10,26 @@ services:
       - key: PORT
         value: 4000
       - key: DB_URL
-        placeholder: "Your MongoDB connection URL (e.g. mongodb+srv://...)"
+        sync: false
       - key: JWT_SECRET
-        generateValue: true # Generates a secure random JWT secret automatically
+        generateValue: true
       - key: CLIENT_URL
-        placeholder: "Your Vercel deployment URL (e.g. https://your-app.vercel.app)"
+        sync: false
       - key: FOLDER_NAME
         value: "STUDYNOTION-Backend"
       - key: MAIL_HOST
         value: "smtp.gmail.com"
       - key: MAIL_USER
-        placeholder: "Your Gmail account email"
+        sync: false
       - key: MAIL_PASS
-        placeholder: "Your Gmail App Password (16 characters, no spaces)"
+        sync: false
       - key: RAZORPAY_KEY
-        placeholder: "Your Razorpay Key ID"
+        sync: false
       - key: RAZORPAY_SECRET
-        placeholder: "Your Razorpay Secret Key"
+        sync: false
       - key: API_KEY
-        placeholder: "Your Cloudinary API Key"
+        sync: false
       - key: API_SECRET
-        placeholder: "Your Cloudinary API Secret"
+        sync: false
       - key: CLOUD_NAME
-        placeholder: "Your Cloudinary Cloud Name"
+        sync: false
