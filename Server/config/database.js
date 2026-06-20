@@ -8,7 +8,8 @@ const dbConnect = ()=>{
         console.log("Connection Successfull");
     })
     .catch((error)=>{
-        console.log("Error in DB Connection");
+        console.log("Error in DB Connection:", error.message);
+        console.error(error);
         process.exit(1);
     })
 }
