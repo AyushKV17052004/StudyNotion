@@ -40,10 +40,11 @@ exports.getAllCategory = async(req,res)=>{
        // Self-seeding: If the new production database has no categories, seed default ones automatically
        if (!response || response.length === 0) {
            const defaultCategories = [
-               { name: "Web Development", description: "Learn HTML, CSS, JavaScript, React, Node.js, and build modern websites." },
-               { name: "AI & Machine Learning", description: "Explore neural networks, Python, deep learning, and advanced AI systems." },
-               { name: "Mobile Development", description: "Build premium iOS and Android applications using React Native, Flutter, or Swift/Kotlin." },
-               { name: "Cyber Security", description: "Master ethical hacking, network security, and protect systems from cyber threats." }
+               { name: "WebDev", description: "Web Development courses" },
+               { name: "Python", description: "Python Programming courses" },
+               { name: "DevOps", description: "DevOps and Infrastructure courses" },
+               { name: "AI|ML", description: "Artificial Intelligence and Machine Learning courses" },
+               { name: "Operating System", description: "Operating Systems and core CS concepts" }
            ];
            await Category.insertMany(defaultCategories);
            response = await Category.find({},{name:true , description:true});

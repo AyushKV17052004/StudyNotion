@@ -32,13 +32,29 @@ exports.createCourse = async(req, res) =>{
       //Category verification
 
     //   const tagDetails = await Tag.find({name:tag})
-      const categoryDetails  = await Category.findOne({name:category})
+      let categoryDetails  = await Category.findOne({name:category})
+      
+      // Safety Seeding: If the database is completely empty of categories, seed them on-the-fly
+      if(!categoryDetails){
+          const count = await Category.countDocuments();
+          if (count === 0) {
+              const defaultCategories = [
+                  { name: "WebDev", description: "Web Development courses" },
+                  { name: "Python", description: "Python Programming courses" },
+                  { name: "DevOps", description: "DevOps and Infrastructure courses" },
+                  { name: "AI|ML", description: "Artificial Intelligence and Machine Learning courses" },
+                  { name: "Operating System", description: "Operating Systems and core CS concepts" }
+              ];
+              await Category.insertMany(defaultCategories);
+              categoryDetails = await Category.findOne({name:category});
+          }
+      }
+
       if(!categoryDetails){
         return res.status(404).json({
                 success:false,
-                message:"category can't be Found"
+                message:`Category '${category}' can't be Found`
             })
-        
       }
 
       //upload image
